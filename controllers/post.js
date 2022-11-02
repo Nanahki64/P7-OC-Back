@@ -12,7 +12,7 @@ exports.createPost = async (req, res, next) => {
     res.json(post);
 };
 
-exports.getAllPosts = async (req, res, next) => {
+exports.getPost = async (req, res, next) => {
     const post = await prisma.post.findMany({
         where: {
             author: { email: req.body.email }
