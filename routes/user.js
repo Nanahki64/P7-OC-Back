@@ -10,8 +10,6 @@ const router = express.Router();
  * limiter permet d'empêcher d'envoyer la requête à l'infinie.
  * userCtrl contôle la création ou l'autehentification d'un utilisateur.
  */
-// router.post('/signup',validator, userCtrl.signup);
-// router.post('/login',limiter, userCtrl.login);
 router.post('/signup',validator, userCtrl.signup);
 router.post('/login',limiter, userCtrl.login);
 

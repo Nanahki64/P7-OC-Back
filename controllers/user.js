@@ -8,8 +8,8 @@ const prisma = new PrismaClient();
  * bcrypt permet de hacher le mot de passe utilisateur avec un sel.
  */
 exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10).then(async hash => {
-        await prisma.user.create({
+    bcrypt.hash(req.body.password, 10).then(hash => {
+        prisma.user.create({
             data: {
                 name: req.body.name,
                 email: req.body.email,
@@ -27,8 +27,8 @@ exports.signup = (req, res, next) => {
  * bcrypt compare les mots de passe haché entre la base de donnée et ce qui à été inscrit dans le formulaire.
  * jwt assigne un token à l'utilisateur.
  */
-exports.login = async (req, res, next) => {
-    await prisma.user.findUnique({
+exports.login = (req, res, next) => {
+    prisma.user.findUnique({
         where: {
             email: req.body.email
         }

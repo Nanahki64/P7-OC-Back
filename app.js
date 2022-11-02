@@ -9,6 +9,11 @@ const path = require('path');
 const userRoutes = require('./routes/user');
 
 /**
+ * importe les routes post.
+ */
+const postRoutes = require('./routes/post');
+
+/**
  * utilisation d'express pour analyser les requêtes JSON entrantes.
  */
 app.use(express.json());
@@ -34,6 +39,11 @@ app.use((req, res, next) => {
  * utilisation du middleware userRoutes pour chaques requêtes du chemin déclaré.
  */
  app.use('/api/auth', userRoutes);
+
+/**
+ * utilisation du middleware userRoutes pour chaques requêtes du chemin déclaré.
+ */
+app.use('/api/post', postRoutes);
 
 /**
  * déclaration du chemin qui stock les images téléchargé par les utilisateurs.

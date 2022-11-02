@@ -20,17 +20,12 @@ model User {
 
 model Post {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  slug          String    @unique
   title         String
   body          String
   comments      Comment[]
-  author        User      @relation(fields: [authorId], references: [id])
-  authorId      String    @db.ObjectId
-  imageUrl      String
-  likes         Int
-  dislikes      Int
-  usersLiked    Int[]
-  usersDisliked Int[]
+  author        User      @relation(fields: [authorEmail], references: [email])
+  authorEmail   String
+  imageUrl      String?
 }
 
 // Comments contain a comment string and connect back to the post.
