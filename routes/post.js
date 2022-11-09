@@ -14,4 +14,10 @@ router.post('/', postCtrl.createPost);
  */
 router.get('/', postCtrl.getAllPosts);
 
+/**
+ * Route qui permet d'envoyer la requête pour récupérer un post via son id.
+ * postCtrl contrôle la récupération du post.
+ */
+router.get('/:id', postCtrl.getOnePost);
+
 module.exports = router;

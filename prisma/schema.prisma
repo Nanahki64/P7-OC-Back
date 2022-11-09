@@ -21,7 +21,7 @@ model User {
 model Post {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   title         String
-  body          String
+  content          String
   comments      Comment[]
   author        User      @relation(fields: [authorEmail], references: [email])
   authorEmail   String
