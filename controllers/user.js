@@ -11,7 +11,8 @@ exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10).then(hash => {
         prisma.user.create({
             data: {
-                name: req.body.name,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
                 email: req.body.email,
                 password: hash
             }
@@ -43,9 +44,9 @@ exports.login = (req, res, next) => {
                     res.status(401).json({ message: 'Paire identifiant/mot de passe incorrecte' });
                 } else {
                     res.status(200).json({
-                        userId: user._id,
+                        userId: user.id,
                         token: jwt.sign(
-                            { userId: user._id },
+                            { userId: user.id },
                             process.env.SECRET_KEY,
                             { expiresIn: '24h' }
                         )

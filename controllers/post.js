@@ -5,14 +5,15 @@ const prisma = new PrismaClient();
  * exportation de la fonction createPost qui permet de créer un post. 
  */
 exports.createPost = async (req, res, next) => {
+    //const newImageUrl = url de l'image ? || '';
     const post = await prisma.post.create({
         data: {
             title: req.body.title,
             content: req.body.content,
-            author: { connect: { email: req.body.email } }
+            author: { connect: { id: req.auth.userId } },
         }
     })
-    res.json(post);
+    res.json(post)
 };
 
 /**
@@ -20,6 +21,7 @@ exports.createPost = async (req, res, next) => {
  */
 exports.getAllPosts = async (req, res, next) => {
     const posts = await prisma.post.findMany({ })
+    //gerer les erreurs.
     res.json(posts);
 };
 
@@ -28,9 +30,11 @@ exports.getAllPosts = async (req, res, next) => {
  */
 exports.getOnePost = async (req, res, next) => {
     const post = await prisma.post.findUnique({
-        where: {
-            id: req.params.id,
+        where: { id: req.params.id },
+        include: {
+            author: { select: { firstName: true, lastName: true } }
         }
     })
+    //gerer les erreurs.
     res.json(post);
-}
+};
