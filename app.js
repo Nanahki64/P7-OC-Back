@@ -14,6 +14,11 @@ const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
 
 /**
+ * importe les routes comment.
+ */
+const commentRoutes = require('./routes/comment');
+
+/**
  * utilisation d'express pour analyser les requêtes JSON entrantes.
  */
 app.use(express.json());
@@ -38,12 +43,17 @@ app.use((req, res, next) => {
 /**
  * utilisation du middleware userRoutes pour chaques requêtes du chemin déclaré.
  */
- app.use('/api/auth', userRoutes);
+app.use('/api/auth', userRoutes);
 
 /**
- * utilisation du middleware userRoutes pour chaques requêtes du chemin déclaré.
+ * utilisation du middleware postRoutes pour chaques requêtes du chemin déclaré.
  */
 app.use('/api/post', postRoutes);
+
+/**
+ * utilisation du middleware commentRoutes pour chaques requêtes du chemin déclaré.
+ */
+app.use('/api/comment', commentRoutes);
 
 /**
  * déclaration du chemin qui stock les images téléchargé par les utilisateurs.
