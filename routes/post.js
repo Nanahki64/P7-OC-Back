@@ -16,6 +16,12 @@ router.post('/',auth, postCtrl.createPost);
 router.put('/:id', auth, postCtrl.modifyPost);
 
 /**
+ * Route qui permet de supprimer un post.
+ * postCtrl contrôle la modification d'un post.
+ */
+ router.delete('/:id', auth, postCtrl.deletePost);
+
+/**
  * Route qui permet d'envoyer la requête pour récupérer tout les post.
  * postCtrl contrôle la récupération des post.
  */

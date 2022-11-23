@@ -14,7 +14,8 @@ exports.signup = (req, res, next) => {
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
                 email: req.body.email,
-                password: hash
+                password: hash,
+                //isAdmin: true,
             }
         })
         .then(() => res.status(201).json({ message: 'Utilisateur crée !' }))
@@ -45,8 +46,9 @@ exports.login = (req, res, next) => {
                 } else {
                     res.status(200).json({
                         userId: user.id,
+                        isAdmin: user.isAdmin,
                         token: jwt.sign(
-                            { userId: user.id },
+                            { userId: user.id, isAdmin: user.isAdmin },
                             process.env.SECRET_KEY,
                             { expiresIn: '24h' }
                         )
