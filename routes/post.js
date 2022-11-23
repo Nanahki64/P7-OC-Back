@@ -10,6 +10,12 @@ const router = express.Router();
 router.post('/',auth, postCtrl.createPost);
 
 /**
+ * Route qui permet de modifier un post.
+ * postCtrl contrôle la modification d'un post.
+ */
+router.put('/:id', auth, postCtrl.modifyPost);
+
+/**
  * Route qui permet d'envoyer la requête pour récupérer tout les post.
  * postCtrl contrôle la récupération des post.
  */
