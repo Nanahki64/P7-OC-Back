@@ -26,7 +26,7 @@ exports.createPost = async (req, res, next) => {
         }
     } catch(e) {
         res.status(400).json({ message: `postCreate failed:` });
-        // res.status(400).json({ message: `postCreate failed: ${e}` });
+        //res.status(400).json({ message: `postCreate failed: ${e}` });
     }
 };
 
@@ -34,13 +34,27 @@ exports.createPost = async (req, res, next) => {
 * exportation de la fonction modifyPost qui permet la modification d'un post. 
 */
 exports.modifyPost = async (req, res, next) => {
-    const post = await prisma.post.update({
-        where: { id: req.params.id },
-        data: {
-            title: req.body.title,
-        }
-    })
-    res.json(post);
+    const newImageUrl = req.body.imageUrl ? `${req.protocol}://${req.get('host')}/images/${req.body.imageUrl}` : '' ;
+    if(newImageUrl == '') {
+        const post = await prisma.post.update({
+            where: { id: req.params.id },
+            data: {
+                title: req.body.title,
+                content: req.body.content,
+            }
+        })
+        res.json(post);
+    } else {
+        const post = await prisma.post.update({
+            where: { id: req.params.id },
+            data: {
+                title: req.body.title,
+                content: req.body.content,
+                imageUrl: newImageUrl
+            }
+        })
+        res.json(post);
+    }
 }
 
 /**
@@ -61,6 +75,8 @@ exports.deletePost = (req, res, next) => {
             })
             .then(() => res.status(200).json({ message: 'post supprime' }))
             .catch(() => res.status(400).json({ message: `erreur de suppression` }))
+        } else {
+            res.json({message: 'Vous n etes pas le proprietaire du post !'});
         }
     })
     .catch(() => res.status(400).json({ message: 'erreur: post introuvable' }));
