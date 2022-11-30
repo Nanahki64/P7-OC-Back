@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const fs = require('fs');
 const prisma = new PrismaClient();
 
 /**
@@ -10,7 +11,7 @@ exports.createPost = async (req, res, next) => {
     try {
         const title = req.body.title;
         const content = req.body.content;
-        const newImageUrl = req.body.imageUrl ? `${req.protocol}://${req.get('host')}/images/${req.body.imageUrl}` : '' ;
+        const newImageUrl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '' ;
         if(title && (content || newImageUrl)) {
             const post = await prisma.post.create({
                 data: {
@@ -35,37 +36,54 @@ exports.createPost = async (req, res, next) => {
 * exportation de la fonction modifyPost qui permet la modification d'un post. 
 */
 exports.modifyPost = async (req, res, next) => {
-    const newImageUrl = req.body.imageUrl ? `${req.protocol}://${req.get('host')}/images/${req.body.imageUrl}` : '' ;
-    if(newImageUrl == '') {
-        const post = await prisma.post.update({
-            where: { id: req.params.id },
-            data: {
-                title: req.body.title,
-                content: req.body.content,
-            }
-        })
-        res.json(post);
-    } else {
-        const post = await prisma.post.update({
-            where: { id: req.params.id },
-            data: {
-                title: req.body.title,
-                content: req.body.content,
-                imageUrl: newImageUrl
-            }
-        })
-        res.json(post);
-    }
+    const postId = req.params.id;
+    const isAdmin = req.auth.isAdmin;
+    const isAuthor = req.auth.userId;
+    const title = req.body.title;
+    const content = req.body.content;
+    const newImageUrl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '' ;
+
+    prisma.post.findUnique({
+        where: { id: postId },
+    })
+    .then((post) => {
+        if(isAdmin || (isAuthor == post.authorId)) {
+                if(title && (content || newImageUrl)) {
+                    if((newImageUrl || req.body.delete) && post.imageUrl) {
+                        const filename = post.imageUrl.split('/images/')[1];
+                        fs.unlink(`images/${filename}`, err => err && console.log(err));
+                        post.imageUrl = '';
+                    }
+                    prisma.post.update({
+                        where: { id: postId },
+                        data: {
+                            title: title,
+                            content: content ? content : post.content,
+                            imageUrl: newImageUrl ? newImageUrl : post.imageUrl
+                        }
+                    })
+                    .then(() => res.status(200).json({ message: 'post modifie' }))
+                    .catch(() => res.status(400).json({ message: 'erreur: une erreur est survenue lors de la modification du post' }))
+                } else {
+                    res.status(400).json({ message: 'erreur: titre ou contenu manquant' });
+                }
+        } else {
+            res.status(400).json({ message: 'erreur: vous n etes pas le proprietaire du post' });
+        }
+    })
+    .catch(() => res.status(400).json({ message: 'erreur: post introuvable' }));
+    //si catch, une image s'upload quand même.
 }
 
 /**
 * exportation de la fonction modifyPost qui permet la modification d'un post.
 */
 exports.deletePost = (req, res, next) => {
+    //fs unlink
     const postId = req.params.id;
     const isAdmin = req.auth.isAdmin;
     const isAuthor = req.auth.userId;
-  
+    
     prisma.post.findUnique({
         where: { id: postId },
     })
