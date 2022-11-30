@@ -2,35 +2,66 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 /**
- * exportation de la fonction createComment qui permet de créer un commentaire.
- */
+* exportation de la fonction createComment qui permet de créer un commentaire.
+*/
 exports.createComment = async (req, res, next) => {
-    const comment = await prisma.comment.create({
-        data: {
-            comment: req.body.comment,
-            post: { connect: { id: req.body.id } },
-            author: { connect: { email: req.body.email } }
-        }
-    })
-    res.json(comment);
+    try {
+        const comment = await prisma.comment.create({
+            data: {
+                comment: req.body.comment,
+                post: { connect: { id: req.body.id } },
+                author: { connect: { email: req.body.email } }
+            }
+        })
+        res.json(comment);
+    } catch(e) {
+        res.status(400).json({ message: `createComment failed:` });
+    }
 };
 
 /**
- * exportation de la fonction getAllComments qui permet de récupérer tout les commentaires.
- */
-exports.getAllComments = async (req, res, next) => {
-    const comments = await prisma.comment.findMany({ })
-    res.json(comments);
+* exportation de la fonction deleteComment qui permet de supprimer un commentaire.
+*/
+exports.deleteComment = (req, res, next) => {
+    const commentId = req.params.id;
+    const isAdmin = req.auth.isAdmin;
+    const isAuthor = req.auth.userId;
+    
+    prisma.comment.findUnique({
+        where: { id: commentId },
+    })
+    .then((comment) => {
+        if(isAdmin || (isAuthor == comment.authorId)) {
+            prisma.comment.delete({
+                where: { id: commentId }
+            })
+            .then(() => res.status(200).json({ message: 'Commentaire supprimé.' }))
+            .catch(() => res.status(400).json({ message: 'erreur de suppression' }))
+        } else {
+            res.json({message: 'Vous n etes pas le proprietaire du post !'});
+        }
+    })
+    .catch(() => res.status(400).json({ message: 'erreur: commentaire introuvable' }));
 }
 
 /**
- * exportation de la fonction getOneComment qui permet de récupérer un commentaire.
- */
+* exportation de la fonction getAllComments qui permet de récupérer tout les commentaires.
+*/
+exports.getAllComments = async (req, res, next) => {
+    prisma.comment.findMany({ })
+    .then((comments) => res.status(200).json({ comments }))
+    .catch(() => res.status(400).json({ message: 'erreur: impossible de recuperer les commentaires.' }));
+}
+
+/**
+* exportation de la fonction getOneComment qui permet de récupérer un commentaire.
+*/
 exports.getOneComment = async (req, res, next) => {
-    const comment = await prisma.comment.findUnique({
+    prisma.comment.findUnique({
         where: {
             id: req.params.id
         }
     })
-    res.json(comment);
+    .then((comment) => res.status(200).json({ comment }))
+    .catch(() => res.status(400).json({ message: 'erreur: impossible de recuperer le commentaire.' }));
 }

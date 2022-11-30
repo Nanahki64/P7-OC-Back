@@ -20,7 +20,8 @@ exports.createPost = async (req, res, next) => {
                     author: { connect: { id: req.auth.userId } },
                 }
             })
-            res.json(post);
+            .then((post) => res.status(200).json({ post }))
+            .catch(() => res.status(400).json({ message: 'erreur: une erreur est survenue lors de la creation du post' }))
         } else {
             res.status(400).json({ message: 'Un titre et un contenue ou une image sont necessaire' });
         }
@@ -88,7 +89,7 @@ exports.deletePost = (req, res, next) => {
 exports.getAllPosts = (req, res, next) => {
     prisma.post.findMany({ })
     .then((posts) => res.status(200).json({ posts }))
-    .catch((error) => res.status(400).json({ message: 'erreur: cant get posts' }));
+    .catch(() => res.status(400).json({ message: 'erreur: cant get posts' }));
 };
 
 /**
@@ -102,5 +103,5 @@ exports.getOnePost = (req, res, next) => {
         }
     })
     .then((post) => res.status(200).json({ post }))
-    .catch((error) => res.status(400).json({ message: 'erreur: cant get post' }));
+    .catch(() => res.status(400).json({ message: 'erreur: cant get post' }));
 };
