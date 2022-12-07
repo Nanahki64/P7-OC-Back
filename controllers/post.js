@@ -13,7 +13,7 @@ exports.createPost = async (req, res, next) => {
         const content = req.body.content;
         const newImageUrl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '' ;
         if(title && (content || newImageUrl)) {
-            const post = await prisma.post.create({
+            prisma.post.create({
                 data: {
                     title: title,
                     content: content,
@@ -49,15 +49,14 @@ exports.modifyPost = async (req, res, next) => {
     .then((post) => {
         if(isAdmin || (isAuthor == post.authorId)) {
                 if(title && (content || newImageUrl)) {
+                    const filename = post.imageUrl.split('/images/')[1];
                     //modification avec nouvelle image.
                     if((newImageUrl || req.body.delete) && post.imageUrl) {
-                        const filename = post.imageUrl.split('/images/')[1];
-                        fs.unlink(`images/${filename}`, err => err && console.log(err));
+                        deleteImg(filename);
                     }
                     //modification sans image.
                     if(req.file == undefined) {
-                        const filename = post.imageUrl.split('/images/')[1];
-                        fs.unlink(`images/${filename}`, err => err && console.log(err));
+                        deleteImg(filename);
                         post.imageUrl = '';
                     }
                     prisma.post.update({
@@ -74,11 +73,18 @@ exports.modifyPost = async (req, res, next) => {
                     res.status(400).json({ message: 'erreur: titre ou contenu manquant' });
                 }
         } else {
+            if(req.file) {
+                deleteImg(req.file.filename);
+            }
             res.status(400).json({ message: 'erreur: vous n etes pas le proprietaire du post' });
         }
     })
-    .catch(() => res.status(400).json({ message: 'erreur: post introuvable' }));
-    //si catch, une image s'upload quand même--------------------------------------------------------------------------------------------------****.
+    .catch(() => {
+        if(req.file) {
+            deleteImg(req.file.filename);
+        }
+        res.status(400).json({ message: 'erreur: post introuvable' })
+     });
 }
 
 /**
@@ -89,7 +95,6 @@ exports.deletePost = (req, res, next) => {
     const isAdmin = req.auth.isAdmin;
     const isAuthor = req.auth.userId;
 
-    
     prisma.post.findUnique({
         where: { id: postId },
     })
@@ -101,7 +106,7 @@ exports.deletePost = (req, res, next) => {
             .then(() => {
                 const filename = post.imageUrl.split('/images/')[1];
                 if(filename != undefined) {
-                    fs.unlink(`images/${filename}`, err => err && console.log(err));
+                    deleteImg(filename);
                 }
                 res.status(200).json({ message: 'post supprime' })
             })
@@ -135,3 +140,7 @@ exports.getOnePost = (req, res, next) => {
     .then((post) => res.status(200).json({ post }))
     .catch(() => res.status(400).json({ message: 'erreur: cant get post' }));
 };
+
+function deleteImg(img) {
+    fs.unlink(`images/${img}`, err => err && console.log(err));
+}
