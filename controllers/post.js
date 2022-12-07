@@ -49,7 +49,13 @@ exports.modifyPost = async (req, res, next) => {
     .then((post) => {
         if(isAdmin || (isAuthor == post.authorId)) {
                 if(title && (content || newImageUrl)) {
+                    //modification avec nouvelle image.
                     if((newImageUrl || req.body.delete) && post.imageUrl) {
+                        const filename = post.imageUrl.split('/images/')[1];
+                        fs.unlink(`images/${filename}`, err => err && console.log(err));
+                    }
+                    //modification sans image.
+                    if(req.file == undefined) {
                         const filename = post.imageUrl.split('/images/')[1];
                         fs.unlink(`images/${filename}`, err => err && console.log(err));
                         post.imageUrl = '';
@@ -72,17 +78,17 @@ exports.modifyPost = async (req, res, next) => {
         }
     })
     .catch(() => res.status(400).json({ message: 'erreur: post introuvable' }));
-    //si catch, une image s'upload quand même.
+    //si catch, une image s'upload quand même--------------------------------------------------------------------------------------------------****.
 }
 
 /**
 * exportation de la fonction modifyPost qui permet la modification d'un post.
 */
 exports.deletePost = (req, res, next) => {
-    //fs unlink
     const postId = req.params.id;
     const isAdmin = req.auth.isAdmin;
     const isAuthor = req.auth.userId;
+
     
     prisma.post.findUnique({
         where: { id: postId },
@@ -92,7 +98,13 @@ exports.deletePost = (req, res, next) => {
             prisma.post.delete({
                 where: { id: postId }
             })
-            .then(() => res.status(200).json({ message: 'post supprime' }))
+            .then(() => {
+                const filename = post.imageUrl.split('/images/')[1];
+                if(filename != undefined) {
+                    fs.unlink(`images/${filename}`, err => err && console.log(err));
+                }
+                res.status(200).json({ message: 'post supprime' })
+            })
             .catch(() => res.status(400).json({ message: `erreur de suppression` }))
         } else {
             res.json({message: 'Vous n etes pas le proprietaire du post !'});
