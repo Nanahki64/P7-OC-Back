@@ -27,4 +27,10 @@ router.get('/', auth,commentCtrl.getAllComments);
  */
 router.get('/:id', auth,commentCtrl.getOneComment);
 
+/**
+ * Route qui permet d'envoyer la requête pour récupérer les commentaires d'un post.
+ * commentCtrl contrôle la récupération du post.
+ */
+router.post('/post', auth,commentCtrl.getPostComments);
+
 module.exports = router;

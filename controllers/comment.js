@@ -65,3 +65,27 @@ exports.getOneComment = async (req, res, next) => {
     .then((comment) => res.status(200).json({ comment }))
     .catch(() => res.status(400).json({ message: 'erreur: impossible de recuperer le commentaire.' }));
 }
+
+/**
+* exportation de la fonction getOneComment qui permet de récupérer les commentaires d'un post.
+*/
+exports.getPostComments = async (req, res, next) => {
+    try {
+        const [comments, count] = await prisma.$transaction(
+            [
+                prisma.comment.findMany({
+                    where: {
+                        postId: req.body.postId
+                    }
+                }),
+                prisma.comment.count({
+                    where: {
+                        postId: req.body.postId
+                    }
+                })
+            ]);
+            res.status(201).json({comments, count});
+    } catch(e) {
+        res.status(400).json({ message: `get comments failed: ${e}` });
+    }
+}
