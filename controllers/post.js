@@ -122,7 +122,11 @@ exports.deletePost = (req, res, next) => {
 * exportation de la fonction getAllPosts qui permet de récupérer tout les posts. 
 */
 exports.getAllPosts = (req, res, next) => {
-    prisma.post.findMany({ })
+    prisma.post.findMany({ 
+        include: {
+            author: { select: { firstName: true, lastName: true } }
+        }
+     })
     .then((posts) => res.status(200).json({ posts }))
     .catch(() => res.status(400).json({ message: 'erreur: cant get posts' }));
 };

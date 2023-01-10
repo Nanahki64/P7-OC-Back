@@ -10,7 +10,7 @@ exports.createComment = async (req, res, next) => {
             data: {
                 comment: req.body.comment,
                 post: { connect: { id: req.body.id } },
-                author: { connect: { email: req.body.email } }
+                author: { connect: { id: req.auth.userId } }
             }
         })
         res.json(comment);
