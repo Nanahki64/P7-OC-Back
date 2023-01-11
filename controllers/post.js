@@ -123,6 +123,9 @@ exports.deletePost = (req, res, next) => {
 */
 exports.getAllPosts = (req, res, next) => {
     prisma.post.findMany({ 
+        orderBy: {
+            id: 'desc'
+        },
         include: {
             author: { select: { firstName: true, lastName: true } }
         }

@@ -30,7 +30,7 @@ model Post {
   imageUrl      String    @default("")
   createdAt     DateTime  @default(now())
   updateAt      DateTime  @updatedAt
-  author        User      @relation(fields: [authorId], references: [id])
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId      String    @db.ObjectId
   comments      Comment[]
   like          Likes[]
@@ -38,9 +38,9 @@ model Post {
 
 model Comment {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  post          Post      @relation(fields: [postId], references: [id])
+  post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId        String    @db.ObjectId
-  author        User      @relation(fields: [authorId], references: [id])
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId      String    @db.ObjectId
   comment       String
   createdAt     DateTime  @default(now())
@@ -49,9 +49,9 @@ model Comment {
 
 model Likes {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  post          Post      @relation(fields: [postId], references: [id])
+  post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId        String    @db.ObjectId
-  author        User      @relation(fields: [authorId], references: [id])
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId      String    @db.ObjectId
   like          Int       @default(0)
   @@unique([postId, authorId])
