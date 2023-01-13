@@ -37,8 +37,7 @@ exports.createOrUpdate = async (req, res , next) => {
                     }
                 },
             })
-        ]
-        );
+        ]);
         let alreadyLiked = !!isLiked;
         res.status(201).json({like, count, alreadyLiked});
     } catch(e) {
@@ -71,8 +70,7 @@ exports.deleteLike = async (req, res , next) => {
                     }
                 }
             })
-        ]
-        );
+        ]);
         let alreadyLiked = !!isLiked;
         res.status(201).json({count, alreadyLiked});
     } catch(e) {
@@ -80,12 +78,26 @@ exports.deleteLike = async (req, res , next) => {
     }
 }
 
-exports.getLikesCount = (req, res, next) => {
-    prisma.likes.count({
-        where: {
-            postId: req.params.id
-        }
-    })
-    .then((likes) => res.status(200).json({likes}))
-    .catch(() => res.status(400).json({ message: 'erreur: impossible de recuperer le nombre de likes.' }))
+exports.getLikesCount = async (req, res, next) => {
+    try {
+        const [count, isLiked] = await prisma.$transaction([
+            prisma.likes.count({
+                where: {
+                    postId: req.params.id
+                }
+            }),
+            prisma.likes.findUnique({
+                where: { 
+                    postId_authorId: { 
+                        authorId: req.auth.userId,
+                        postId: req.params.id
+                    }
+                },
+            })
+        ]);
+        let alreadyLiked = !!isLiked;
+        res.status(201).json({count, alreadyLiked});
+    } catch(e) {
+        res.status(400).json({ message: 'erreur: impossible de recuperer le nombre de likes.' });
+    }
 }
