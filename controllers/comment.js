@@ -76,6 +76,9 @@ exports.getPostComments = async (req, res, next) => {
                 prisma.comment.findMany({
                     where: {
                         postId: req.body.postId
+                    },
+                    include: {
+                        author: { select: { firstName: true, lastName: true } }
                     }
                 }),
                 prisma.comment.count({
