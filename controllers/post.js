@@ -53,10 +53,6 @@ exports.modifyPost = async (req, res, next) => {
                     //modification avec nouvelle image.
                     if((newImageUrl || req.body.delete) && post.imageUrl) {
                         deleteImg(filename);
-                    }
-                    //modification sans image.
-                    if(req.file == undefined) {
-                        deleteImg(filename);
                         post.imageUrl = '';
                     }
                     prisma.post.update({
