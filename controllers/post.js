@@ -28,7 +28,6 @@ exports.createPost = async (req, res, next) => {
         }
     } catch(e) {
         res.status(400).json({ message: `postCreate failed:` });
-        //res.status(400).json({ message: `postCreate failed: ${e}` });
     }
 };
 

@@ -41,7 +41,7 @@ exports.createOrUpdate = async (req, res , next) => {
         let alreadyLiked = !!isLiked;
         res.status(201).json({like, count, alreadyLiked});
     } catch(e) {
-        res.status(400).json({ message: `postCreate failed: ${e}` });
+        res.status(400).json({ message: `postCreate failed` });
     }
 }
 
@@ -74,7 +74,7 @@ exports.deleteLike = async (req, res , next) => {
         let alreadyLiked = !!isLiked;
         res.status(201).json({count, alreadyLiked});
     } catch(e) {
-        res.status(400).json({ message: `deleteLike failed: ${e}` });
+        res.status(400).json({ message: `deleteLike failed` });
     }
 }
 

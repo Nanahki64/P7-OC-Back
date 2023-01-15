@@ -77,6 +77,9 @@ exports.getPostComments = async (req, res, next) => {
                     where: {
                         postId: req.body.postId
                     },
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
                     include: {
                         author: { select: { firstName: true, lastName: true } }
                     }
@@ -89,6 +92,6 @@ exports.getPostComments = async (req, res, next) => {
             ]);
             res.status(201).json({comments, count});
     } catch(e) {
-        res.status(400).json({ message: `get comments failed: ${e}` });
+        res.status(400).json({ message: `get comments failed` });
     }
 }
