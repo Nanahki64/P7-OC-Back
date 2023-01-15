@@ -1,6 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+/**
+* exportation de la fonction createOrUpdate qui permet de créer ou mettre à jour un like.
+*/
 exports.createOrUpdate = async (req, res , next) => {
     try {
         const [like, count, isLiked] = await prisma.$transaction(
@@ -45,6 +48,9 @@ exports.createOrUpdate = async (req, res , next) => {
     }
 }
 
+/**
+* exportation de la fonction deleteLike qui permet de supprimer un like.
+*/
 exports.deleteLike = async (req, res , next) => {
     try {
         const [del, count, isLiked] = await prisma.$transaction(
@@ -78,6 +84,9 @@ exports.deleteLike = async (req, res , next) => {
     }
 }
 
+/**
+* exportation de la fonction getLikesCount qui permet de récupérer le nombre de like.
+*/
 exports.getLikesCount = async (req, res, next) => {
     try {
         const [count, isLiked] = await prisma.$transaction([

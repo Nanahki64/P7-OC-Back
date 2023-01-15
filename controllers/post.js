@@ -49,7 +49,7 @@ exports.modifyPost = async (req, res, next) => {
         if(isAdmin || (isAuthor == post.authorId)) {
                 if(title && (content || newImageUrl)) {
                     const filename = post.imageUrl.split('/images/')[1];
-                    //modification avec nouvelle image.
+                    //modification avec nouvelle image ou image supprimé.
                     if((newImageUrl || req.body.delete) && post.imageUrl) {
                         deleteImg(filename);
                         post.imageUrl = '';

@@ -19,7 +19,7 @@ const postRoutes = require('./routes/post');
 const commentRoutes = require('./routes/comment');
 
 /**
- * 
+ * importe les routes like.
  */
 const likesRoutes = require('./routes/likes');
 
@@ -61,14 +61,14 @@ app.use('/api/post', postRoutes);
 app.use('/api/comment', commentRoutes);
 
 /**
+ * utilisation du middleware likesRoutes pour chaques requêtes du chemin déclaré.
+ */
+app.use('/api/likes', likesRoutes);
+
+/**
  * déclaration du chemin qui stock les images téléchargé par les utilisateurs.
  */
 app.use('/images', express.static(path.join(__dirname, 'images')));
-
-/**
- * 
- */
-app.use('/api/likes', likesRoutes);
 
 /**
  * Permet d'exporter le module pour l'utiliser dans un autre composant.
